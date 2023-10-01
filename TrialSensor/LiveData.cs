@@ -18,19 +18,20 @@ namespace TrialSensor
             InitializeDatabaseConnection();
         }
 
+        // Initialize the SerialPort for reading data from the Arduino.
         private void InitializeSerialPort()
         {
             serialPort = new SerialPort
             {
-                PortName = "COM3", 
-                BaudRate = 9600 
+                PortName = "COM3", // Replace with the correct COM port
+                BaudRate = 9600   // Match with Arduino's baud rate
             };
 
             serialPort.DataReceived += DataReceivedHandler;
 
             try
             {
-                serialPort.Open();
+                serialPort.Open(); // Attempt to open the serial port.
             }
             catch (Exception ex)
             {
@@ -38,6 +39,7 @@ namespace TrialSensor
             }
         }
 
+        // Initialize the database connection using the connection string from app.config.
         private void InitializeDatabaseConnection()
         {
             string connectionString = ConfigurationManager.ConnectionStrings["ConnectionString"].ConnectionString;
@@ -46,7 +48,7 @@ namespace TrialSensor
 
             try
             {
-                sqlConnection.Open();
+                sqlConnection.Open(); // Attempt to open the database connection.
             }
             catch (Exception ex)
             {
@@ -54,11 +56,12 @@ namespace TrialSensor
             }
         }
 
+        // Event handler for data received from the Arduino.
         private void DataReceivedHandler(object sender, SerialDataReceivedEventArgs e)
         {
             try
             {
-                string data = serialPort.ReadLine(); 
+                string data = serialPort.ReadLine(); // Read the data from Arduino
                 Console.WriteLine("Received data: " + data);
                 UpdateTemperatureAndHumidity(data);
             }
@@ -68,6 +71,7 @@ namespace TrialSensor
             }
         }
 
+        // Process and update temperature and humidity data received from the Arduino.
         private void UpdateTemperatureAndHumidity(string data)
         {
             string[] parts = data.Split(' ');
@@ -95,9 +99,10 @@ namespace TrialSensor
                     cmd.Parameters.AddWithValue("@Date", date);
                     cmd.Parameters.AddWithValue("@Time", time);
 
-                    cmd.ExecuteNonQuery();
+                    cmd.ExecuteNonQuery(); // Execute the SQL query to insert data into the database.
                 }
 
+                // Update the UI elements with the received data.
                 Invoke((MethodInvoker)delegate
                 {
                     temperatureTextBox.Text = temperature1;
